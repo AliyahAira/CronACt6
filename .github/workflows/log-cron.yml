@@ -1,0 +1,32 @@
+name: Log Time Job
+
+on:
+  schedule:
+    # Runs every 30 minutes
+    - cron: "*/30 * * * *"
+
+jobs:
+  log_time:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run logging script
+        run: |
+          chmod +x log_time.sh
+          ./log_time.sh
+
+      - name: Run count updates script
+        run: |
+          chmod +x count_updates.sh
+          ./count_updates.sh
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add log.txt update_count.txt
+          git commit -m "Update log file with new timestamp and count" || echo "No changes to commit"
+          git push
